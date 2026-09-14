@@ -1,0 +1,1003 @@
+[
+  {
+    "question": "Who created Node.js?",
+    "options": [
+      "Brendan Eich",
+      "Ryan Dahl",
+      "Guido van Rossum",
+      "Tim Berners-Lee"
+    ],
+    "answer": "Ryan Dahl"
+  },
+  {
+    "question": "What is Node.js built on top of?",
+    "options": [
+      "Chrome's V8 Engine",
+      "Mozilla's SpiderMonkey",
+      "Safari's JavaScriptCore",
+      "Microsoft's Chakra"
+    ],
+    "answer": "Chrome's V8 Engine"
+  },
+  {
+    "question": "Which programming language is predominantly used to write Node.js binding/C++ addons?",
+    "options": [
+      "C++",
+      "Python",
+      "Rust",
+      "Go"
+    ],
+    "answer": "C++"
+  },
+  {
+    "question": "Which library does Node.js use to handle asynchronous I/O and the event loop?",
+    "options": [
+      "libuv",
+      "libc",
+      "libevent",
+      "glibc"
+    ],
+    "answer": "libuv"
+  },
+  {
+    "question": "Is Node.js single-threaded or multi-threaded by default for executing user code?",
+    "options": [
+      "Single-threaded",
+      "Multi-threaded",
+      "It depends on the number of CPU cores",
+      "It uses thread-pooling for all tasks"
+    ],
+    "answer": "Single-threaded"
+  },
+  {
+    "question": "Which thread pool is managed by libuv for handling blocking tasks like file I/O?",
+    "options": [
+      "Worker Pool",
+      "Main Thread Pool",
+      "Event Thread Pool",
+      "Task Scheduler Pool"
+    ],
+    "answer": "Worker Pool"
+  },
+  {
+    "question": "What is the default size of the libuv thread pool?",
+    "options": [
+      "4 threads",
+      "1 thread",
+      "8 threads",
+      "Unlimited"
+    ],
+    "answer": "4 threads"
+  },
+  {
+    "question": "Which environment variable is used to change the size of the libuv thread pool?",
+    "options": [
+      "UV_THREADPOOL_SIZE",
+      "NODE_THREAD_COUNT",
+      "LIBUV_POOL_LIMIT",
+      "NODE_WORKER_THREADS"
+    ],
+    "answer": "UV_THREADPOOL_SIZE"
+  },
+  {
+    "question": "What happens if a synchronous function blocks the main thread in Node.js?",
+    "options": [
+      "The entire process pauses and cannot process other incoming requests",
+      "Node.js offloads the synchronous block to the thread pool",
+      "Node.js forks a child process automatically",
+      "An error is thrown instantly"
+    ],
+    "answer": "The entire process pauses and cannot process other incoming requests"
+  },
+  {
+    "question": "In the Node.js Event Loop, which phase executes callbacks of setTimeout and setInterval?",
+    "options": [
+      "Timers phase",
+      "Pending callbacks phase",
+      "Poll phase",
+      "Check phase"
+    ],
+    "answer": "Timers phase"
+  },
+  {
+    "question": "In the Node.js Event Loop, which phase executes setImmediate callbacks?",
+    "options": [
+      "Check phase",
+      "Poll phase",
+      "Close callbacks phase",
+      "Idle phase"
+    ],
+    "answer": "Check phase"
+  },
+  {
+    "question": "Where are process.nextTick() callbacks executed in the Event Loop?",
+    "options": [
+      "Immediately after the current operation completes, before moving to the next phase",
+      "At the end of the Timers phase",
+      "Inside the Poll phase",
+      "Only during idle cycles"
+    ],
+    "answer": "Immediately after the current operation completes, before moving to the next phase"
+  },
+  {
+    "question": "Between process.nextTick() and Promise microtasks, which queue has higher priority?",
+    "options": [
+      "process.nextTick() queue",
+      "Promise microtask queue",
+      "They have equal priority and execute round-robin",
+      "It depends on strict mode"
+    ],
+    "answer": "process.nextTick() queue"
+  },
+  {
+    "question": "What does npm stand for?",
+    "options": [
+      "Node Package Manager",
+      "New Project Module",
+      "Node Program Maker",
+      "It is not an official acronym"
+    ],
+    "answer": "It is not an official acronym"
+  },
+  {
+    "question": "Which command is used to initialize a new Node.js project with a package.json?",
+    "options": [
+      "npm init",
+      "npm start",
+      "npm create",
+      "node init"
+    ],
+    "answer": "npm init"
+  },
+  {
+    "question": "What is the purpose of the 'package-lock.json' file?",
+    "options": [
+      "To lock the exact dependency versions installed for consistent builds",
+      "To prevent users from editing dependencies",
+      "To encrypt package.json configurations",
+      "To speed up the local dev server boot"
+    ],
+    "answer": "To lock the exact dependency versions installed for consistent builds"
+  },
+  {
+    "question": "Which command checks for security vulnerabilities in your installed NPM packages?",
+    "options": [
+      "npm audit",
+      "npm verify",
+      "npm doctor",
+      "npm scan"
+    ],
+    "answer": "npm audit"
+  },
+  {
+    "question": "What is the Node.js REPL?",
+    "options": [
+      "Read-Eval-Print Loop interactive shell",
+      "Resource-Event-Process Linker",
+      "Router-Engine-Parser Library",
+      "Redundant-Error-Prevention Layer"
+    ],
+    "answer": "Read-Eval-Print Loop interactive shell"
+  },
+  {
+    "question": "Which global object contains information about the current Node.js process execution?",
+    "options": [
+      "process",
+      "env",
+      "global",
+      "system"
+    ],
+    "answer": "process"
+  },
+  {
+    "question": "How do you access command-line arguments passed to a Node.js script?",
+    "options": [
+      "process.argv",
+      "process.args",
+      "global.arguments",
+      "env.ARGS"
+    ],
+    "answer": "process.argv"
+  },
+  {
+    "question": "Which system is the default module system in Node.js historically?",
+    "options": [
+      "CommonJS",
+      "ES Modules",
+      "AMD",
+      "UMD"
+    ],
+    "answer": "CommonJS"
+  },
+  {
+    "question": "How do you import a module in the CommonJS system?",
+    "options": [
+      "require('module')",
+      "import module from 'module'",
+      "include('module')",
+      "load('module')"
+    ],
+    "answer": "require('module')"
+  },
+  {
+    "question": "How do you export functionality from a CommonJS module?",
+    "options": [
+      "module.exports",
+      "export default",
+      "export.function",
+      "module.send"
+    ],
+    "answer": "module.exports"
+  },
+  {
+    "question": "How do you enable ES Modules natively in a Node.js project without a transpiler?",
+    "options": [
+      "Set 'type': 'module' in package.json",
+      "Set 'esm': true in package.json",
+      "Run node with the --esm flag",
+      "ES Modules are always native and require no configuration"
+    ],
+    "answer": "Set 'type': 'module' in package.json"
+  },
+  {
+    "question": "Which file extension is explicitly treated as an ES Module in Node.js?",
+    "options": [
+      ".mjs",
+      ".cjs",
+      ".esm.js",
+      ".ts"
+    ],
+    "answer": ".mjs"
+  },
+  {
+    "question": "Which file extension is explicitly treated as a CommonJS module in Node.js?",
+    "options": [
+      ".cjs",
+      ".mjs",
+      ".common.js",
+      ".json"
+    ],
+    "answer": ".cjs"
+  },
+  {
+    "question": "Are __dirname and __filename variables available in ES Modules in Node.js?",
+    "options": [
+      "No, they are only available in CommonJS modules",
+      "Yes, they are available in both",
+      "Yes, but only if strict mode is off",
+      "No, they were deprecated in Node.js 12 altogether"
+    ],
+    "answer": "No, they are only available in CommonJS modules"
+  },
+  {
+    "question": "How can you replicate __dirname in an ES Module?",
+    "options": [
+      "Using fileURLToPath(import.meta.url) and path.dirname()",
+      "Using process.cwd()",
+      "Using import.meta.dirname",
+      "Both fileURLToPath and import.meta.dirname are valid (since Node.js 20.11+)",
+      "Using process.env.DIRNAME"
+    ],
+    "answer": "Both fileURLToPath and import.meta.dirname are valid (since Node.js 20.11+)"
+  },
+  {
+    "question": "Which built-in module is used to handle file system operations?",
+    "options": [
+      "fs",
+      "path",
+      "file",
+      "system"
+    ],
+    "answer": "fs"
+  },
+  {
+    "question": "Which fs function reads a file synchronously?",
+    "options": [
+      "fs.readFileSync",
+      "fs.readFile",
+      "fs.readSync",
+      "fs.readSyncFile"
+    ],
+    "answer": "fs.readFileSync"
+  },
+  {
+    "question": "Which module provides utilities for working with file and directory paths?",
+    "options": [
+      "path",
+      "url",
+      "fs",
+      "os"
+    ],
+    "answer": "path"
+  },
+  {
+    "question": "What is the difference between path.join() and path.resolve()?",
+    "options": [
+      "path.resolve() always returns an absolute path, resolving relative segments against the current working directory",
+      "path.join() always resolves to the absolute root directory",
+      "path.resolve() only merges path segments without validating routes",
+      "There is no functional difference"
+    ],
+    "answer": "path.resolve() always returns an absolute path, resolving relative segments against the current working directory"
+  },
+  {
+    "question": "Which module allows Node.js to spin up a server to handle HTTP requests?",
+    "options": [
+      "http",
+      "net",
+      "url",
+      "server"
+    ],
+    "answer": "http"
+  },
+  {
+    "question": "What method on the http module is used to create a web server?",
+    "options": [
+      "http.createServer",
+      "http.createListener",
+      "http.newServer",
+      "http.startServer"
+    ],
+    "answer": "http.createServer"
+  },
+  {
+    "question": "Which class does http.Server inherit from?",
+    "options": [
+      "net.Server",
+      "events.EventEmitter",
+      "stream.Writable",
+      "process.EventEmitter"
+    ],
+    "answer": "net.Server"
+  },
+  {
+    "question": "Which module handles TCP/Socket communication in Node.js?",
+    "options": [
+      "net",
+      "http",
+      "tls",
+      "dns"
+    ],
+    "answer": "net"
+  },
+  {
+    "question": "Which module is used for secure TLS/SSL communication?",
+    "options": [
+      "tls",
+      "net",
+      "crypto",
+      "https"
+    ],
+    "answer": "tls"
+  },
+  {
+    "question": "Which built-in class allows you to listen to and emit custom events?",
+    "options": [
+      "EventEmitter",
+      "EventTarget",
+      "Dispatcher",
+      "ProcessListener"
+    ],
+    "answer": "EventEmitter"
+  },
+  {
+    "question": "Which module exports the EventEmitter class?",
+    "options": [
+      "events",
+      "process",
+      "util",
+      "fs"
+    ],
+    "answer": "events"
+  },
+  {
+    "question": "What is the default limit of listeners for a single event on an EventEmitter before a warning is printed?",
+    "options": [
+      "10 listeners",
+      "5 listeners",
+      "20 listeners",
+      "Unlimited"
+    ],
+    "answer": "10 listeners"
+  },
+  {
+    "question": "Which class represents a raw sequence of bytes in memory outside the V8 heap?",
+    "options": [
+      "Buffer",
+      "ArrayBuffer",
+      "Blob",
+      "TypedArray"
+    ],
+    "answer": "Buffer"
+  },
+  {
+    "question": "How do you create a safe, zero-filled Buffer of a specific size in modern Node.js?",
+    "options": [
+      "Buffer.alloc(size)",
+      "new Buffer(size)",
+      "Buffer.from(size)",
+      "Buffer.allocUnsafe(size)"
+    ],
+    "answer": "Buffer.alloc(size)"
+  },
+  {
+    "question": "What is the difference between Buffer.alloc() and Buffer.allocUnsafe()?",
+    "options": [
+      "allocUnsafe() is faster but allocates uninitialized memory that may contain sensitive old data",
+      "allocUnsafe() restricts buffer access to admin roles",
+      "alloc() allocates V8 heap memory whereas allocUnsafe() uses CPU cache",
+      "There is no difference in performance"
+    ],
+    "answer": "allocUnsafe() is faster but allocates uninitialized memory that may contain sensitive old data"
+  },
+  {
+    "question": "What are the four fundamental types of streams in Node.js?",
+    "options": [
+      "Readable, Writable, Duplex, Transform",
+      "Input, Output, Pipe, Filter",
+      "Source, Sink, PassThrough, Streamer",
+      "Binary, Text, Buffer, Array"
+    ],
+    "answer": "Readable, Writable, Duplex, Transform"
+  },
+  {
+    "question": "Which stream type reads data, modifies it, and outputs the modified data?",
+    "options": [
+      "Transform",
+      "Writable",
+      "Readable",
+      "PassThrough"
+    ],
+    "answer": "Transform"
+  },
+  {
+    "question": "Which method connects a Readable stream directly to a Writable stream to handle backpressure automatically?",
+    "options": [
+      "pipe()",
+      "write()",
+      "connect()",
+      "push()"
+    ],
+    "answer": "pipe()"
+  },
+  {
+    "question": "What is backpressure in Node.js streams?",
+    "options": [
+      "When the data reading source produces data faster than the writing destination can consume it",
+      "When CPU cycles overload the network stack",
+      "An encryption bottleneck in HTTPS pipelines",
+      "An error thrown when a file stream breaks"
+    ],
+    "answer": "When the data reading source produces data faster than the writing destination can consume it"
+  },
+  {
+    "question": "What event does a Readable stream emit when there is no more data to be consumed?",
+    "options": [
+      "end",
+      "close",
+      "finish",
+      "done"
+    ],
+    "answer": "end"
+  },
+  {
+    "question": "What event does a Writable stream emit when stream.end() is called and all data is flushed?",
+    "options": [
+      "finish",
+      "end",
+      "close",
+      "done"
+    ],
+    "answer": "finish"
+  },
+  {
+    "question": "Which class is a stream that passes input straight to output without modifications?",
+    "options": [
+      "PassThrough",
+      "Duplex",
+      "Transform",
+      "Filter"
+    ],
+    "answer": "PassThrough"
+  },
+  {
+    "question": "Which module contains utilities to convert callback-based APIs into Promise-based APIs?",
+    "options": [
+      "util",
+      "process",
+      "events",
+      "assert"
+    ],
+    "answer": "util"
+  },
+  {
+    "question": "Which function in the util module transforms a standard error-first callback function into a promise?",
+    "options": [
+      "util.promisify",
+      "util.toPromise",
+      "util.callbackToPromise",
+      "util.asyncify"
+    ],
+    "answer": "util.promisify"
+  },
+  {
+    "question": "What signature convention do Node.js callbacks follow?",
+    "options": [
+      "Error-first: callback(err, data)",
+      "Data-first: callback(data, err)",
+      "Boolean state: callback(success, result)",
+      "Status-code based"
+    ],
+    "answer": "Error-first: callback(err, data)"
+  },
+  {
+    "question": "Which module provides cryptographic functions like hashing, HMAC, and encryption?",
+    "options": [
+      "crypto",
+      "tls",
+      "security",
+      "hash"
+    ],
+    "answer": "crypto"
+  },
+  {
+    "question": "Which crypto method generates cryptographically secure pseudo-random bytes?",
+    "options": [
+      "crypto.randomBytes",
+      "crypto.getRandomValues",
+      "crypto.randomUUID",
+      "Math.random"
+    ],
+    "answer": "crypto.randomBytes"
+  },
+  {
+    "question": "What is the purpose of the 'os' module?",
+    "options": [
+      "To retrieve operating system information like memory, CPU cores, and network interfaces",
+      "To interact with system file paths",
+      "To execute shell scripts",
+      "To schedule cron jobs in the kernel"
+    ],
+    "answer": "To retrieve operating system information like memory, CPU cores, and network interfaces"
+  },
+  {
+    "question": "Which method on the 'os' module returns an array of CPU core architectures and speeds?",
+    "options": [
+      "os.cpus()",
+      "os.cores()",
+      "os.cpuInfo()",
+      "os.hardware()"
+    ],
+    "answer": "os.cpus()"
+  },
+  {
+    "question": "Which method on the 'os' module returns the amount of system free memory in bytes?",
+    "options": [
+      "os.freemem()",
+      "os.totalmem()",
+      "os.freeMemory()",
+      "os.memory()"
+    ],
+    "answer": "os.freemem()"
+  },
+  {
+    "question": "Which module allows parsing query strings into structured objects?",
+    "options": [
+      "querystring",
+      "url",
+      "path",
+      "http"
+    ],
+    "answer": "querystring"
+  },
+  {
+    "question": "Which global class represents a URL parser in modern Node.js aligning with the WHATWG standard?",
+    "options": [
+      "URL",
+      "url.URLParser",
+      "WHATWGParser",
+      "Location"
+    ],
+    "answer": "URL"
+  },
+  {
+    "question": "Which module is used to spawn external shell commands and programs?",
+    "options": [
+      "child_process",
+      "cluster",
+      "worker_threads",
+      "process"
+    ],
+    "answer": "child_process"
+  },
+  {
+    "question": "What is the difference between child_process.exec() and child_process.spawn()?",
+    "options": [
+      "exec() buffers the entire output in memory and returns it in a callback; spawn() streams output via stdout/stderr",
+      "exec() runs asynchronously whereas spawn() runs synchronously",
+      "spawn() runs command in a shell; exec() runs raw binaries only",
+      "There is no difference"
+    ],
+    "answer": "exec() buffers the entire output in memory and returns it in a callback; spawn() streams output via stdout/stderr"
+  },
+  {
+    "question": "Which child_process method is specifically designed to spawn a new Node.js process and establish an IPC channel?",
+    "options": [
+      "fork()",
+      "spawn()",
+      "exec()",
+      "execFile()"
+    ],
+    "answer": "fork()"
+  },
+  {
+    "question": "Which module allows you to run multiple instances of a Node.js application sharing the same server port?",
+    "options": [
+      "cluster",
+      "child_process",
+      "worker_threads",
+      "pm2"
+    ],
+    "answer": "cluster"
+  },
+  {
+    "question": "How does the 'cluster' module distribute incoming TCP connections to worker processes by default on non-Windows systems?",
+    "options": [
+      "Round-robin scheduling",
+      "First-come first-served queue",
+      "IP Hash routing",
+      "Least connections allocation"
+    ],
+    "answer": "Round-robin scheduling"
+  },
+  {
+    "question": "Which module is used to perform CPU-intensive tasks using actual OS-level parallel threads?",
+    "options": [
+      "worker_threads",
+      "child_process",
+      "cluster",
+      "threads"
+    ],
+    "answer": "worker_threads"
+  },
+  {
+    "question": "In worker_threads, how do the main thread and a worker thread pass messages to each other?",
+    "options": [
+      "MessagePort (postMessage and on('message'))",
+      "Process pipes (stdin/stdout)",
+      "Shared database sockets",
+      "Global V8 variable sharing"
+    ],
+    "answer": "MessagePort (postMessage and on('message'))"
+  },
+  {
+    "question": "Which class allows sharing memory between multiple worker_threads without serialization overhead?",
+    "options": [
+      "SharedArrayBuffer",
+      "ArrayBuffer",
+      "Buffer",
+      "TypedArray"
+    ],
+    "answer": "SharedArrayBuffer"
+  },
+  {
+    "question": "Which thread is the main thread in a worker_threads application?",
+    "options": [
+      "The thread where isMainThread property from worker_threads is true",
+      "Thread ID 0",
+      "The master thread in cluster mode",
+      "The OS root scheduler thread"
+    ],
+    "answer": "The thread where isMainThread property from worker_threads is true"
+  },
+  {
+    "question": "How can you pass read-only initial configurations to a Worker on creation?",
+    "options": [
+      "workerData option in Worker constructor",
+      "process.env environment variables",
+      "Passing command-line arguments",
+      "Using postMessage immediately after boot"
+    ],
+    "answer": "workerData option in Worker constructor"
+  },
+  {
+    "question": "Which flag is passed to the node executable to inspect/debug applications?",
+    "options": [
+      "--inspect",
+      "--debug",
+      "--dev",
+      "--watch"
+    ],
+    "answer": "--inspect"
+  },
+  {
+    "question": "Which built-in module provides APIs for structural performance measurements?",
+    "options": [
+      "perf_hooks",
+      "console",
+      "diagnostics",
+      "trace_events"
+    ],
+    "answer": "perf_hooks"
+  },
+  {
+    "question": "Which core module is used to write unit test assertions in Node.js?",
+    "options": [
+      "assert",
+      "test",
+      "mocha",
+      "jest"
+    ],
+    "answer": "assert"
+  },
+  {
+    "question": "In what Node.js version was the native, built-in test runner ('node:test') introduced?",
+    "options": [
+      "Node.js 18",
+      "Node.js 14",
+      "Node.js 16",
+      "Node.js 20"
+    ],
+    "answer": "Node.js 18"
+  },
+  {
+    "question": "What does the console.time() and console.timeEnd() methods do?",
+    "options": [
+      "Measure the duration of operations between the two matching labels",
+      "Print timestamps in ISO format",
+      "Print current CPU cycles",
+      "Control system clock configurations"
+    ],
+    "answer": "Measure the duration of operations between the two matching labels"
+  },
+  {
+    "question": "How do you generate a memory heap dump to diagnose leaks in Node.js?",
+    "options": [
+      "v8.writeHeapSnapshot()",
+      "process.dumpHeap()",
+      "global.heapDump()",
+      "console.snapshot()"
+    ],
+    "answer": "v8.writeHeapSnapshot()"
+  },
+  {
+    "question": "What is the purpose of the 'v8' module in Node.js?",
+    "options": [
+      "To access APIs specific to the V8 engine, like heap statistics and serialization",
+      "To compile JavaScript manually",
+      "To configure V8 thread priorities",
+      "To interface with graphics hardware"
+    ],
+    "answer": "To access APIs specific to the V8 engine, like heap statistics and serialization"
+  },
+  {
+    "question": "Which method returns heap memory usage details of the current process?",
+    "options": [
+      "process.memoryUsage()",
+      "os.freemem()",
+      "v8.getHeapSpaceStatistics()",
+      "process.heapUsage()"
+    ],
+    "answer": "process.memoryUsage()"
+  },
+  {
+    "question": "What is the purpose of 'AsyncLocalStorage' from AsyncHooks module?",
+    "options": [
+      "To store state across asynchronous execution lifetimes (like request-scoped context)",
+      "To store data in browser localStorage from server",
+      "An encrypted storage system for API tokens",
+      "A key-value cache built into the OS kernel"
+    ],
+    "answer": "To store state across asynchronous execution lifetimes (like request-scoped context)"
+  },
+  {
+    "question": "Which command-line option automatically restarts the Node.js process when a file changes (native watcher introduced in Node.js 18/20)?",
+    "options": [
+      "--watch",
+      "--nodemon",
+      "--reload",
+      "--live"
+    ],
+    "answer": "--watch"
+  },
+  {
+    "question": "What is Express.js?",
+    "options": [
+      "A minimal and flexible Node.js web application framework",
+      "A database connector for Node.js",
+      "A deployment tool for AWS",
+      "A testing library for frontend UI"
+    ],
+    "answer": "A minimal and flexible Node.js web application framework"
+  },
+  {
+    "question": "In Express.js, what is middleware?",
+    "options": [
+      "Functions that have access to the request object, response object, and the next middleware function",
+      "A database indexing protocol",
+      "The layer that compiles JavaScript to machine code",
+      "A CSS parser for express templates"
+    ],
+    "answer": "Functions that have access to the request object, response object, and the next middleware function"
+  },
+  {
+    "question": "Which method on an Express app registers route handlers for HTTP GET requests?",
+    "options": [
+      "app.get()",
+      "app.post()",
+      "app.route('get')",
+      "app.handler()"
+    ],
+    "answer": "app.get()"
+  },
+  {
+    "question": "Which Express middleware is commonly used to parse JSON payloads?",
+    "options": [
+      "express.json()",
+      "express.urlencoded()",
+      "body-parser.json()",
+      "Both express.json() and body-parser.json() are valid"
+    ],
+    "answer": "Both express.json() and body-parser.json() are valid"
+  },
+  {
+    "question": "How do you serve static files like images and CSS in Express?",
+    "options": [
+      "express.static() middleware",
+      "fs.readFile() inside request handlers",
+      "express.assets() module",
+      "Using the http module fallback"
+    ],
+    "answer": "express.static() middleware"
+  },
+  {
+    "question": "In Express.js, how do you handle route parameters like '/users/:id'?",
+    "options": [
+      "req.params.id",
+      "req.query.id",
+      "req.body.id",
+      "req.route.params(id)"
+    ],
+    "answer": "req.params.id"
+  },
+  {
+    "question": "In Express, what parameters does an error-handling middleware function accept?",
+    "options": [
+      "err, req, res, next",
+      "req, res, next",
+      "err, req, res",
+      "err, next"
+    ],
+    "answer": "err, req, res, next"
+  },
+  {
+    "question": "Which node-based tool is popular for managing Node.js processes in production (providing reload and monitoring)?",
+    "options": [
+      "PM2",
+      "Nodemon",
+      "Forever",
+      "Webpack"
+    ],
+    "answer": "PM2"
+  },
+  {
+    "question": "Which file in an NPM package specifies entrypoints, run scripts, metadata, and dependencies?",
+    "options": [
+      "package.json",
+      "index.js",
+      "npm.config",
+      "package-lock.json"
+    ],
+    "answer": "package.json"
+  },
+  {
+    "question": "Which registry is the default host for npm packages?",
+    "options": [
+      "npmjs.com",
+      "github.com",
+      "node-modules.org",
+      "deno.land"
+    ],
+    "answer": "npmjs.com"
+  },
+  {
+    "question": "How can you securely store sensitive keys and API passwords in a Node.js project?",
+    "options": [
+      "Using environment variables (.env files loaded via dotenv)",
+      "Hardcoding them in a secondary utility file",
+      "Saving them in the public git repository",
+      "Storing them in a plain text package.json field"
+    ],
+    "answer": "Using environment variables (.env files loaded via dotenv)"
+  },
+  {
+    "question": "Which built-in module assists with deep object equality testing and type checking?",
+    "options": [
+      "util",
+      "assert",
+      "process",
+      "console"
+    ],
+    "answer": "util"
+  },
+  {
+    "question": "What is the purpose of 'process.env.NODE_ENV'?",
+    "options": [
+      "To define the runtime environment state, commonly 'development' or 'production'",
+      "To specify the Node.js engine version",
+      "To declare OS details",
+      "To control dependency installations"
+    ],
+    "answer": "To define the runtime environment state, commonly 'development' or 'production'"
+  },
+  {
+    "question": "What happens when an uncaught exception is thrown in Node.js?",
+    "options": [
+      "The process terminates immediately by default, printing a stack trace",
+      "The event loop resets and ignores the error",
+      "The current active request is aborted but the server continues",
+      "The error is forwarded to standard output and logged in system logs"
+    ],
+    "answer": "The process terminates immediately by default, printing a stack trace"
+  },
+  {
+    "question": "How can you listen for exceptions that are not caught in any try-catch block?",
+    "options": [
+      "process.on('uncaughtException', callback)",
+      "process.on('error', callback)",
+      "global.onException(callback)",
+      "console.onError(callback)"
+    ],
+    "answer": "process.on('uncaughtException', callback)"
+  },
+  {
+    "question": "What does a promise rejection that is not handled trigger?",
+    "options": [
+      "'unhandledRejection' event on process",
+      "'error' event on process",
+      "Process exit immediately with code 1",
+      "An alert in V8 browser debugger"
+    ],
+    "answer": "'unhandledRejection' event on process"
+  },
+  {
+    "question": "Which module allows resolving DNS queries like looking up IP addresses of domains?",
+    "options": [
+      "dns",
+      "net",
+      "http",
+      "url"
+    ],
+    "answer": "dns"
+  },
+  {
+    "question": "Which core module contains zlib compression algorithms?",
+    "options": [
+      "zlib",
+      "crypto",
+      "fs",
+      "util"
+    ],
+    "answer": "zlib"
+  },
+  {
+    "question": "Which core module is responsible for reading credentials and opening HTTPS servers?",
+    "options": [
+      "https",
+      "http",
+      "tls",
+      "net"
+    ],
+    "answer": "https"
+  },
+  {
+    "question": "What is the security risk associated with eval() in Node.js?",
+    "options": [
+      "Allows arbitrary command execution and code injection vulnerabilities",
+      "Increases garbage collection cycles",
+      "Restricts module imports",
+      "Forces synchronous blocking threads"
+    ],
+    "answer": "Allows arbitrary command execution and code injection vulnerabilities"
+  }
+]

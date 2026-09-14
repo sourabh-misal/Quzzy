@@ -1,0 +1,52 @@
+[
+  {
+    "question": "Which of the following is correct about Node.js?",
+    "options": [
+      "Node.js is a client-side JavaScript framework.",
+      "Node.js is a server-side runtime environment built on Chrome's V8 Engine.",
+      "Node.js is a relational database management system.",
+      "Node.js is a compiled programming language like C++."
+    ],
+    "answer": "Node.js is a server-side runtime environment built on Chrome's V8 Engine."
+  },
+  {
+    "question": "What pattern does Node.js use to handle asynchronous operations and concurrent connections?",
+    "options": [
+      "Multi-threaded request blocking",
+      "Single-threaded event loop architecture",
+      "Sequential database polling",
+      "Fork-join parallel threads pool"
+    ],
+    "answer": "Single-threaded event loop architecture"
+  },
+  {
+    "question": "Which core module in Node.js is used to handle file path operations?",
+    "options": [
+      "fs",
+      "path",
+      "url",
+      "http"
+    ],
+    "answer": "path"
+  },
+  {
+    "question": "How do you import a module in Node.js using the CommonJS module system?",
+    "options": [
+      "import module from 'name'",
+      "require('name')",
+      "loadModule('name')",
+      "using 'name'"
+    ],
+    "answer": "require('name')"
+  },
+  {
+    "question": "What is the purpose of the package.json file in Node.js projects?",
+    "options": [
+      "To compile JavaScript code into binary machine code.",
+      "To store environment variables and database passwords.",
+      "To hold project metadata, configuration, dependencies, and scripts.",
+      "To serve as the main entry point for HTML documents."
+    ],
+    "answer": "To hold project metadata, configuration, dependencies, and scripts."
+  }
+]
