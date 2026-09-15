@@ -5,10 +5,11 @@ import { StudySession, StudyQuestion, StudyHistoryItem } from '@/types/study';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { session, previousQuestion, selectedAnswer }: {
+    const { session, previousQuestion, selectedAnswer, nextBufferedQuestion }: {
       session: StudySession;
       previousQuestion: StudyQuestion;
       selectedAnswer: string;
+      nextBufferedQuestion?: StudyQuestion;
     } = body;
 
     if (!session || !previousQuestion || selectedAnswer === undefined) {
@@ -38,9 +39,13 @@ export async function POST(req: NextRequest) {
       timestamp: Date.now()
     };
 
+    // If client had nextBufferedQuestion in queue, make it active and put the new question in queue
+    const activeQuestion = nextBufferedQuestion || nextQuestion;
+    const newQueue = nextBufferedQuestion ? [nextQuestion] : [];
+
     const updatedSession: StudySession = {
       ...session,
-      currentDifficulty: nextQuestion.difficulty,
+      currentDifficulty: activeQuestion.difficulty,
       masteryScore,
       consecutiveCorrect,
       consecutiveWrong,
@@ -48,14 +53,16 @@ export async function POST(req: NextRequest) {
       correctCount,
       concepts: updatedConcepts,
       history: [...session.history, historyItem],
-      currentQuestion: nextQuestion,
+      currentQuestion: activeQuestion,
+      questionQueue: newQueue,
       updatedAt: Date.now()
     };
 
     return NextResponse.json({
       success: true,
       evaluation,
-      nextQuestion,
+      nextQuestion: activeQuestion,
+      bufferedQuestion: nextBufferedQuestion ? nextQuestion : undefined,
       updatedSession
     });
   } catch (error: any) {

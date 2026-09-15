@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanTopic = topic.trim();
-    const { concepts, initialQuestion } = await generateInitialStudySession(cleanTopic, username);
+    const { concepts, initialQuestion, nextBufferedQuestion } = await generateInitialStudySession(cleanTopic, username);
 
     const sessionId = `study_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       concepts,
       history: [],
       currentQuestion: initialQuestion,
+      questionQueue: nextBufferedQuestion ? [nextBufferedQuestion] : [],
       completed: false
     };
 
@@ -38,7 +39,8 @@ export async function POST(req: NextRequest) {
       success: true,
       sessionId,
       session: newSession,
-      initialQuestion
+      initialQuestion,
+      nextBufferedQuestion
     });
   } catch (error: any) {
     console.error('Error starting study session:', error);

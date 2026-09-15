@@ -53,6 +53,17 @@ export default function AdminPage() {
   const [passError, setPassError] = useState('');
   const [passSuccess, setPassSuccess] = useState('');
 
+  // AI Model Diagnostics States
+  const [aiStatus, setAiStatus] = useState<{
+    status: 'online' | 'degraded' | 'offline';
+    model: string;
+    latencyMs: number;
+    apiKeyConfigured: boolean;
+    rateLimits: { rpm: string; tpm: string; rpd: string };
+    error?: string;
+  } | null>(null);
+  const [loadingAiStatus, setLoadingAiStatus] = useState(false);
+
   // --- ADMIN PLAY MODE STATES ---
   const [joinedQuizzes, setJoinedQuizzes] = useState<JoinedQuiz[]>([]);
   const [loadingJoined, setLoadingJoined] = useState(true);
@@ -78,12 +89,26 @@ export default function AdminPage() {
           setSession(s);
           loadQuizzes();
           loadJoinedQuizzes();
+          fetchAiStatus();
         }
       } catch (e) {
         router.push('/');
       }
     }
   }, [router]);
+
+  const fetchAiStatus = async () => {
+    setLoadingAiStatus(true);
+    try {
+      const res = await fetch('/api/ai/status');
+      const data = await res.json();
+      setAiStatus(data);
+    } catch (err) {
+      console.error('Failed to fetch AI status:', err);
+    } finally {
+      setLoadingAiStatus(false);
+    }
+  };
 
   // Auto-populate Title and Password if Quiz ID already exists
   useEffect(() => {
@@ -819,13 +844,78 @@ export default function AdminPage() {
         // ==============================================
         // ADMIN CONSOLE MODE INTERFACE
         // ==============================================
-        <div className="grid-cols-1-2-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', alignItems: 'start', animation: 'fadeIn var(--transition-normal)' }}>
-          
-          {/* Create Quiz Form */}
-          <section className="glass-card" style={{ padding: '2rem' }}>
-            <h2 style={{ fontSize: '1.35rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
-              Publish New or Update Quiz
-            </h2>
+        <main style={{ flex: 1, animation: 'fadeIn var(--transition-normal)' }}>
+          {/* AI Model & Engine Diagnostics Card */}
+          <section className="glass-card" style={{ padding: '1.5rem 2rem', marginBottom: '2rem', border: '1px solid var(--glass-border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{ fontSize: '1.75rem' }}>🤖</span>
+                <div>
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                    AI Engine & Model Diagnostics
+                  </h2>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Active LLM runtime powering the Adaptive Study Arena & Socratic Coach
+                  </p>
+                </div>
+              </div>
+
+              <button 
+                onClick={fetchAiStatus} 
+                disabled={loadingAiStatus}
+                className="btn btn-secondary"
+                style={{ padding: '0.4rem 0.9rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                {loadingAiStatus ? 'Pinging...' : '🔄 Test AI Ping'}
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-md)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Model</span>
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--accent-primary)', marginTop: '0.25rem' }}>
+                  {aiStatus?.model || 'gemini-3.5-flash-lite'}
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-md)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status & Latency</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.25rem' }}>
+                  <span style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%', 
+                    background: aiStatus?.status === 'online' ? '#10b981' : (aiStatus?.status === 'degraded' ? '#f59e0b' : '#ef4444') 
+                  }} />
+                  <strong style={{ fontSize: '0.95rem', color: aiStatus?.status === 'online' ? '#10b981' : '#f59e0b' }}>
+                    {aiStatus ? (aiStatus.status === 'online' ? `Online (${aiStatus.latencyMs}ms)` : 'Degraded') : 'Checking...'}
+                  </strong>
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-md)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>RPM / TPM Quota</span>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
+                  15 RPM • 250K TPM
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-md)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Daily Cap & Resiliency</span>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '0.25rem' }}>
+                  500 RPD (Auto-Fallback ON)
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="grid-cols-1-2-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', alignItems: 'start', animation: 'fadeIn var(--transition-normal)' }}>
+            
+            {/* Create Quiz Form */}
+            <section className="glass-card" style={{ padding: '2rem' }}>
+              <h2 style={{ fontSize: '1.35rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+                Publish New or Update Quiz
+              </h2>
 
             {createError && (
               <div className="badge-error" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)', marginBottom: '1rem', display: 'block', textAlign: 'center' }}>
@@ -1273,6 +1363,7 @@ export default function AdminPage() {
             </section>
           </div>
         </div>
+      </main>
       )}
 
       {/* Collision Modal */}

@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation';
 import { UserSession } from '@/types/quiz';
 import { StudySession, StudyQuestion, AnswerEvaluation, ChatMessage } from '@/types/study';
 import { getStudySession, saveStudySession } from '@/lib/db';
+import { incrementDailyQuota, canUseAi } from '@/lib/quota';
 import ThemeToggle from '@/components/ThemeToggle';
+import AiQuotaBadge from '@/components/AiQuotaBadge';
 
 interface PageProps {
   params: Promise<{ sessionId: string }>;
@@ -41,6 +43,10 @@ export default function StudyPracticeArena({ params }: PageProps) {
   const [isAdvancing, setIsAdvancing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+
+  // Zero-Lag Lookahead Pipeline Refs
+  const prefetchPromiseRef = useRef<Promise<any> | null>(null);
+  const prefetchDataRef = useRef<any>(null);
 
   useEffect(() => {
     loadSessionData();
@@ -106,6 +112,37 @@ export default function StudyPracticeArena({ params }: PageProps) {
     setSelectedOption(opt);
   };
 
+  // Trigger silent lookahead prefetch in the background while user reads explanation
+  const triggerPrefetch = (chosenAnswer: string) => {
+    if (!session?.currentQuestion || prefetchPromiseRef.current) return;
+    if (!canUseAi()) return;
+
+    const nextBufferedQuestion = session.questionQueue?.[0];
+
+    prefetchPromiseRef.current = fetch('/api/ai/study/next', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session,
+        previousQuestion: session.currentQuestion,
+        selectedAnswer: chosenAnswer,
+        nextBufferedQuestion
+      })
+    })
+      .then(async res => {
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then(data => {
+        if (data?.success && data.updatedSession) {
+          prefetchDataRef.current = data;
+        }
+      })
+      .catch(err => {
+        console.warn('Background lookahead prefetch non-fatal warning:', err);
+      });
+  };
+
   // Instant Check Answer without giving it away
   const handleCheckAnswer = async () => {
     if (!selectedOption || !session?.currentQuestion) return;
@@ -115,6 +152,12 @@ export default function StudyPracticeArena({ params }: PageProps) {
 
     setIsAnswerChecked(true);
     setIsCorrect(correct);
+
+    // Track daily AI question quota
+    incrementDailyQuota(1);
+
+    // Silently prefetch the question after next in the pipeline
+    triggerPrefetch(selectedOption);
 
     if (correct) {
       // User got it right!
@@ -238,7 +281,7 @@ export default function StudyPracticeArena({ params }: PageProps) {
     }
   };
 
-  // Move to next adaptive question (syncs session metrics with AI)
+  // Move to next adaptive question (Instant 0ms if lookahead buffered, otherwise graceful fetch)
   const handleAdvanceToNext = async () => {
     if (!session?.currentQuestion || isAdvancing) return;
 
@@ -246,8 +289,38 @@ export default function StudyPracticeArena({ params }: PageProps) {
     setError('');
 
     try {
-      // Use the final selected answer or the first wrong attempt for adaptive tracking
+      // 1. Instant 0ms transition if lookahead buffer already completed in background
+      if (prefetchDataRef.current?.updatedSession) {
+        const data = prefetchDataRef.current;
+        prefetchDataRef.current = null;
+        prefetchPromiseRef.current = null;
+        await saveStudySession(data.updatedSession);
+        setSession(data.updatedSession);
+        resetQuestionStates();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setIsAdvancing(false);
+        return;
+      }
+
+      // 2. If prefetch is in-flight right now, await its completion
+      if (prefetchPromiseRef.current) {
+        await prefetchPromiseRef.current;
+        if (prefetchDataRef.current?.updatedSession) {
+          const data = prefetchDataRef.current;
+          prefetchDataRef.current = null;
+          prefetchPromiseRef.current = null;
+          await saveStudySession(data.updatedSession);
+          setSession(data.updatedSession);
+          resetQuestionStates();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setIsAdvancing(false);
+          return;
+        }
+      }
+
+      // 3. Fallback on-demand pipeline request
       const finalSelected = selectedOption || wrongAttempts[0] || session.currentQuestion.options[0];
+      const nextBufferedQuestion = session.questionQueue?.[0];
 
       const res = await fetch('/api/ai/study/next', {
         method: 'POST',
@@ -255,7 +328,8 @@ export default function StudyPracticeArena({ params }: PageProps) {
         body: JSON.stringify({
           session,
           previousQuestion: session.currentQuestion,
-          selectedAnswer: finalSelected
+          selectedAnswer: finalSelected,
+          nextBufferedQuestion
         })
       });
 
@@ -272,6 +346,8 @@ export default function StudyPracticeArena({ params }: PageProps) {
     } catch (err: any) {
       setError(err?.message || 'Failed to advance to next question.');
     } finally {
+      prefetchDataRef.current = null;
+      prefetchPromiseRef.current = null;
       setIsAdvancing(false);
     }
   };
@@ -395,6 +471,7 @@ export default function StudyPracticeArena({ params }: PageProps) {
             </div>
           </div>
 
+          <AiQuotaBadge />
           <ThemeToggle />
         </div>
       </header>

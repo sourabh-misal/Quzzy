@@ -61,5 +61,6 @@ export interface StudySession {
   concepts: StudyConcept[];
   history: StudyHistoryItem[];
   currentQuestion?: StudyQuestion;
+  questionQueue?: StudyQuestion[];
   completed?: boolean;
 }

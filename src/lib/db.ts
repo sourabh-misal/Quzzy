@@ -181,7 +181,10 @@ export const getAllQuizzes = async (): Promise<Quiz[]> => {
   return [];
 };
 
-// --- AI STUDY SESSION OPERATIONS ---
+// --- AI STUDY SESSION OPERATIONS (BROWSER-ISOLATED FOR MULTI-USER PRIVACY) ---
+// Each learner's study sessions and history remain private to their own browser localStorage.
+
+const STUDY_STORAGE_KEY = 'quzzy_local_study_sessions_v2';
 
 export const saveStudySession = async (session: StudySession): Promise<void> => {
   const cleanSession: StudySession = {
@@ -189,80 +192,50 @@ export const saveStudySession = async (session: StudySession): Promise<void> => 
     updatedAt: Date.now()
   };
 
-  if (isOnlineMode() && db) {
-    try {
-      const docRef = doc(db, 'quzzy_study_sessions', cleanSession.id);
-      await setDoc(docRef, cleanSession);
-      console.log(`Study session saved to Firestore: ${cleanSession.id}`);
-    } catch (err) {
-      console.error("Firestore saveStudySession failed, falling back to local storage:", err);
-    }
-  }
-
-  // Local Storage fallback / cache
   if (typeof window !== 'undefined') {
-    const raw = localStorage.getItem('quzzy_local_study_sessions');
-    let sessions: StudySession[] = raw ? JSON.parse(raw) : [];
-    sessions = sessions.filter(s => s.id !== cleanSession.id);
-    sessions.unshift(cleanSession);
-    // Keep last 30 sessions locally
-    if (sessions.length > 30) sessions = sessions.slice(0, 30);
-    localStorage.setItem('quzzy_local_study_sessions', JSON.stringify(sessions));
+    try {
+      const raw = localStorage.getItem(STUDY_STORAGE_KEY) || localStorage.getItem('quzzy_local_study_sessions');
+      let sessions: StudySession[] = raw ? JSON.parse(raw) : [];
+      sessions = sessions.filter(s => s.id !== cleanSession.id);
+      sessions.unshift(cleanSession);
+      // Keep last 40 sessions per browser
+      if (sessions.length > 40) sessions = sessions.slice(0, 40);
+      localStorage.setItem(STUDY_STORAGE_KEY, JSON.stringify(sessions));
+    } catch (err) {
+      console.error('Failed to save study session to local storage:', err);
+    }
   }
 };
 
 export const getStudySession = async (sessionId: string): Promise<StudySession | null> => {
-  if (isOnlineMode() && db) {
+  if (typeof window !== 'undefined') {
     try {
-      const docRef = doc(db, 'quzzy_study_sessions', sessionId);
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        return snap.data() as StudySession;
+      const raw = localStorage.getItem(STUDY_STORAGE_KEY) || localStorage.getItem('quzzy_local_study_sessions');
+      if (raw) {
+        const sessions: StudySession[] = JSON.parse(raw);
+        return sessions.find(s => s.id === sessionId) || null;
       }
     } catch (err) {
-      console.error(`Firestore getStudySession(${sessionId}) failed, checking local:`, err);
+      console.error('Failed to read study session from local storage:', err);
     }
   }
-
-  // Local Storage Fallback
-  if (typeof window !== 'undefined') {
-    const raw = localStorage.getItem('quzzy_local_study_sessions');
-    if (raw) {
-      const sessions: StudySession[] = JSON.parse(raw);
-      return sessions.find(s => s.id === sessionId) || null;
-    }
-  }
-
   return null;
 };
 
 export const getUserStudySessions = async (username: string): Promise<StudySession[]> => {
-  const cleanUser = username.trim().toLowerCase();
-
-  if (isOnlineMode() && db) {
-    try {
-      const q = query(
-        collection(db, 'quzzy_study_sessions'),
-        orderBy('updatedAt', 'desc')
-      );
-      const snap = await getDocs(q);
-      const sessions = snap.docs.map(d => d.data() as StudySession);
-      return sessions.filter(s => s.username?.toLowerCase() === cleanUser);
-    } catch (err) {
-      console.error("Firestore getUserStudySessions failed, checking local storage:", err);
-    }
-  }
-
-  // Local Storage Fallback
   if (typeof window !== 'undefined') {
-    const raw = localStorage.getItem('quzzy_local_study_sessions');
-    if (raw) {
-      const sessions: StudySession[] = JSON.parse(raw);
-      return sessions
-        .filter(s => s.username?.toLowerCase() === cleanUser)
-        .sort((a, b) => b.updatedAt - a.updatedAt);
+    try {
+      const raw = localStorage.getItem(STUDY_STORAGE_KEY) || localStorage.getItem('quzzy_local_study_sessions');
+      if (raw) {
+        const cleanUser = (username || '').trim().toLowerCase();
+        const sessions: StudySession[] = JSON.parse(raw);
+        return sessions
+          .filter(s => !cleanUser || !s.username || s.username.toLowerCase() === cleanUser || cleanUser === 'learner')
+          .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+      }
+    } catch (err) {
+      console.error('Failed to read user study sessions:', err);
     }
   }
-
   return [];
 };

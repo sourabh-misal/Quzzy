@@ -64,11 +64,13 @@ function cleanJsonString(raw: string): string {
 }
 
 /**
- * Generates the initial study plan: breaks topic into sub-concepts and generates a diagnostic foundational question.
+ * Generates the initial study plan: breaks topic into sub-concepts and generates two diagnostic progressive questions
+ * (Question 1 active, Question 2 buffered in the pipeline for zero lag).
  */
 export async function generateInitialStudySession(topic: string, username: string = 'Learner'): Promise<{
   concepts: StudyConcept[];
   initialQuestion: StudyQuestion;
+  nextBufferedQuestion?: StudyQuestion;
 }> {
   const systemInstruction = `You are an expert tutor and instructional designer specializing in adaptive mastery learning.
 Your goal is to guide students to truly understand topics from first principles.
@@ -76,8 +78,10 @@ Output MUST strictly be valid JSON adhering to the specified schema.`;
 
   const prompt = `The user wants to study and master the topic: "${topic}".
 1. Break down this topic into 3 to 4 logical, progressive learning concepts (from basic fundamentals to advanced applications).
-2. Generate the first diagnostic question at the "foundational" difficulty level. The question should test core mental models, definitions, or basic intuitions.
-3. Include 4 clear multiple-choice options, exactly one correct answer (matching one option word for word), an educational explanation, and a foundationalTip (a concise rule of thumb/mental model).
+2. Generate TWO progressive questions:
+   - Question 1: At "foundational" difficulty level testing core definition, mental model, or intuition.
+   - Question 2: At "foundational" or "intermediate" difficulty level testing practical mechanics or real-world behavior.
+3. For each question include 4 clear multiple-choice options, exactly one correct answer (matching one option word for word), an educational explanation, and a foundationalTip.
 
 Return strictly JSON with this exact structure:
 {
@@ -89,45 +93,81 @@ Return strictly JSON with this exact structure:
       "status": "learning"
     }
   ],
-  "initialQuestion": {
-    "id": "q_1",
-    "conceptId": "concept_1",
-    "conceptName": "Concept Name",
-    "difficulty": "foundational",
-    "question": "Clear question text?",
-    "codeSnippet": null,
-    "options": ["Option A", "Option B", "Option C", "Option D"],
-    "answer": "Option A",
-    "explanation": "Why this answer is correct and how to think about it.",
-    "foundationalTip": "Core mental model or rule of thumb for this concept.",
-    "rationale": "Initial diagnostic check to verify foundational understanding."
-  }
+  "initialQuestions": [
+    {
+      "id": "q_1",
+      "conceptId": "concept_1",
+      "conceptName": "Concept Name",
+      "difficulty": "foundational",
+      "question": "First question text?",
+      "codeSnippet": null,
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answer": "Option A",
+      "explanation": "Why this answer is correct and how to think about it.",
+      "foundationalTip": "Core mental model or rule of thumb for this concept.",
+      "rationale": "Diagnostic check on core fundamentals."
+    },
+    {
+      "id": "q_2",
+      "conceptId": "concept_1",
+      "conceptName": "Concept Name",
+      "difficulty": "intermediate",
+      "question": "Second progressive question text?",
+      "codeSnippet": null,
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answer": "Option A",
+      "explanation": "Why this answer is correct.",
+      "foundationalTip": "Tip for this mechanic.",
+      "rationale": "Pipeline buffer: Testing practical behavior."
+    }
+  ]
 }`;
 
   try {
     const rawText = await callGemini(prompt, systemInstruction);
     const parsed = JSON.parse(cleanJsonString(rawText));
-    return {
-      concepts: parsed.concepts.map((c: any, idx: number) => ({
-        id: c.id || `concept_${idx + 1}`,
-        name: c.name,
-        description: c.description,
-        status: 'learning' as const
-      })),
-      initialQuestion: {
-        id: `q_${Date.now()}`,
-        conceptId: parsed.initialQuestion.conceptId || parsed.concepts[0]?.id || 'concept_1',
-        conceptName: parsed.initialQuestion.conceptName || parsed.concepts[0]?.name || 'Core Fundamentals',
-        difficulty: 'foundational',
-        question: parsed.initialQuestion.question,
-        codeSnippet: parsed.initialQuestion.codeSnippet || undefined,
-        options: parsed.initialQuestion.options,
-        answer: parsed.initialQuestion.answer,
-        explanation: parsed.initialQuestion.explanation,
-        foundationalTip: parsed.initialQuestion.foundationalTip,
-        rationale: parsed.initialQuestion.rationale || 'Diagnostic check on core fundamentals.'
-      }
+    
+    const concepts: StudyConcept[] = (parsed.concepts || []).map((c: any, idx: number) => ({
+      id: c.id || `concept_${idx + 1}`,
+      name: c.name,
+      description: c.description,
+      status: 'learning' as const
+    }));
+
+    const qList = parsed.initialQuestions || (parsed.initialQuestion ? [parsed.initialQuestion] : []);
+
+    const initialQuestion: StudyQuestion = {
+      id: `q_${Date.now()}_1`,
+      conceptId: qList[0]?.conceptId || concepts[0]?.id || 'concept_1',
+      conceptName: qList[0]?.conceptName || concepts[0]?.name || 'Core Fundamentals',
+      difficulty: qList[0]?.difficulty || 'foundational',
+      question: qList[0]?.question || `What is the fundamental purpose of ${topic}?`,
+      codeSnippet: qList[0]?.codeSnippet || undefined,
+      options: qList[0]?.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+      answer: qList[0]?.answer || 'Option 1',
+      explanation: qList[0]?.explanation || 'Core concept explanation.',
+      foundationalTip: qList[0]?.foundationalTip,
+      rationale: qList[0]?.rationale || 'Diagnostic check on core fundamentals.'
     };
+
+    let nextBufferedQuestion: StudyQuestion | undefined = undefined;
+    if (qList[1]) {
+      nextBufferedQuestion = {
+        id: `q_${Date.now()}_2`,
+        conceptId: qList[1].conceptId || concepts[0]?.id || 'concept_1',
+        conceptName: qList[1].conceptName || concepts[0]?.name || 'Core Fundamentals',
+        difficulty: qList[1].difficulty || 'intermediate',
+        question: qList[1].question,
+        codeSnippet: qList[1].codeSnippet || undefined,
+        options: qList[1].options,
+        answer: qList[1].answer,
+        explanation: qList[1].explanation,
+        foundationalTip: qList[1].foundationalTip,
+        rationale: qList[1].rationale || 'Buffered question for zero-lag pipeline.'
+      };
+    }
+
+    return { concepts, initialQuestion, nextBufferedQuestion };
   } catch (err) {
     console.error('generateInitialStudySession failed, falling back to local generator:', err);
     return getFallbackInitialSession(topic);
@@ -281,7 +321,11 @@ Return strictly JSON format:
 }
 
 // Resilient Fallback Handlers for offline / network issues
-function getFallbackInitialSession(topic: string): { concepts: StudyConcept[]; initialQuestion: StudyQuestion } {
+function getFallbackInitialSession(topic: string): { 
+  concepts: StudyConcept[]; 
+  initialQuestion: StudyQuestion;
+  nextBufferedQuestion?: StudyQuestion;
+} {
   const cleanTopic = topic.trim();
   const concepts: StudyConcept[] = [
     { id: 'c1', name: `${cleanTopic} Fundamentals`, description: `Core concepts and purpose of ${cleanTopic}`, status: 'learning' },
@@ -290,7 +334,7 @@ function getFallbackInitialSession(topic: string): { concepts: StudyConcept[]; i
   ];
 
   const initialQuestion: StudyQuestion = {
-    id: `q_${Date.now()}`,
+    id: `q_${Date.now()}_1`,
     conceptId: 'c1',
     conceptName: `${cleanTopic} Fundamentals`,
     difficulty: 'foundational',
@@ -307,7 +351,25 @@ function getFallbackInitialSession(topic: string): { concepts: StudyConcept[]; i
     rationale: `Diagnostic foundational check for ${cleanTopic}.`
   };
 
-  return { concepts, initialQuestion };
+  const nextBufferedQuestion: StudyQuestion = {
+    id: `q_${Date.now()}_2`,
+    conceptId: 'c2',
+    conceptName: `${cleanTopic} Mechanics`,
+    difficulty: 'intermediate',
+    question: `When implementing ${cleanTopic} in production, what is a primary operational consideration?`,
+    options: [
+      `Ensure proper lifecycle handling, boundary isolation, and error tolerance`,
+      `Disable memory garbage collection to increase raw loop speed`,
+      `Hardcode network endpoints directly into core computation routines`,
+      `Bypass asynchronous processing loops to force synchronous bottlenecks`
+    ],
+    answer: `Ensure proper lifecycle handling, boundary isolation, and error tolerance`,
+    explanation: `Robust architecture requires clean lifecycle boundaries and fault-tolerant error handling.`,
+    foundationalTip: `Focus on lifecycle safety and predictable data flow.`,
+    rationale: `Lookahead buffered question for seamless transition.`
+  };
+
+  return { concepts, initialQuestion, nextBufferedQuestion };
 }
 
 function getFallbackEvaluation(
@@ -426,5 +488,59 @@ Tutor response:`;
   } catch (err) {
     console.error('chatWithTutor error:', err);
     return "That's an interesting question! Look closely at how this mechanism behaves at runtime and how state changes sequentially.";
+  }
+}
+
+/**
+ * Diagnostic health check for the active Gemini AI model.
+ * Returns model info, latency, and connectivity status for the admin console.
+ */
+export async function checkAiStatus(): Promise<{
+  status: 'online' | 'degraded' | 'offline';
+  model: string;
+  latencyMs: number;
+  apiKeyConfigured: boolean;
+  rateLimits: {
+    rpm: string;
+    tpm: string;
+    rpd: string;
+  };
+  error?: string;
+}> {
+  const modelName = GEMINI_MODEL;
+  const apiKeyConfigured = !!GEMINI_API_KEY;
+
+  if (!apiKeyConfigured) {
+    return {
+      status: 'offline',
+      model: modelName,
+      latencyMs: 0,
+      apiKeyConfigured: false,
+      rateLimits: { rpm: '15 RPM', tpm: '250K TPM', rpd: '500 RPD' },
+      error: 'GEMINI_API_KEY environment variable is not configured.'
+    };
+  }
+
+  const startTime = Date.now();
+  try {
+    const reply = await callGemini('Ping check. Reply with {"pong": true}', undefined, true);
+    const latencyMs = Date.now() - startTime;
+    return {
+      status: 'online',
+      model: modelName,
+      latencyMs,
+      apiKeyConfigured: true,
+      rateLimits: { rpm: '15 RPM', tpm: '250K TPM', rpd: '500 RPD' }
+    };
+  } catch (err: any) {
+    const latencyMs = Date.now() - startTime;
+    return {
+      status: 'degraded',
+      model: modelName,
+      latencyMs,
+      apiKeyConfigured: true,
+      rateLimits: { rpm: '15 RPM', tpm: '250K TPM', rpd: '500 RPD' },
+      error: err?.message || 'Failed to ping Gemini API'
+    };
   }
 }
